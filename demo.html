@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kind Slider Web Component</title>
+<style>
+@layer base {
+    :where( :not( iframe, canvas, img, svg, video ):not( svg *, symbol * ) ) {
+        all: unset;
+        display: revert;
+        line-height: var( --font-line );
+    }
+    *, *::before, *::after {
+        box-sizing: border-box;
+    }
+    html {
+        height: 100%;
+        --font-default: Seravek, 'Gill Sans Nova', Ubuntu, Calibri, 'DejaVu Sans', source-sans-pro, sans-serif;
+        --font-line: calc( 1em + .35rem );
+
+        --wrapper: 60rem;
+        --wrapper-offset: .5fr;
+        @media ( min-width: 40rem ) {
+            --wrapper-offset: 4rem;
+        }
+        @media ( min-width: 70rem ) {
+            /* since we use fancy grid for wrapping, this is necassary */
+            --o-ks-padding: 0em;
+        }
+
+        --blue: #00749d;
+        --raspberry: #de0051;
+
+        --scrollbar-track: hsl( 0 0% 50% / .2 );
+        --scrollbar-thumb: var( --blue );
+
+        --outline-size: max( 2px, .08em );
+        --outline-style: solid;
+        --outline-color: var( --blue );
+        --outline-ink: currentcolor;
+    }
+    body {
+        padding-block: 3rem;
+        font: 1.2em/var( --font-line ) var( --font-default );
+        color: #222;
+        background: #fff;
+        -webkit-font-smoothing: antialiased;
+        text-decoration-thickness: from-font;
+    }
+
+    :is( a, button, input, textarea, select, summary ):focus-visible {
+        outline: var( --outline-size ) var( --outline-style ) var( --outline-ink );
+        outline-offset: var( --outline-offset, var( --outline-size ) );
+    }
+
+    :where( a ) {
+        --_default: var( --color-link, var( --blue ) );
+        --_hover: var( --color-hover, var( --raspberry ) );
+
+        color: var( --_color, var( --_default ) );
+        cursor: revert;
+
+        &:focus,
+        &:hover {
+            --_color: var( --_hover );
+        }
+    }
+}
+
+@layer wrap {
+    .wrapping {
+        display: grid;
+        grid-template-columns:
+            [full-start]
+            minmax(1em, 1fr)
+            [mid-start]
+            minmax(0, var( --wrapper-offset ))
+            [main-start]
+            minmax(0, var( --wrapper ))
+            [main-end]
+            minmax(0, var( --wrapper-offset ))
+            [mid-end]
+            minmax(1em, 1fr)
+            [full-end];
+        align-content: start;
+    }
+    .wrapping > * {
+        grid-column: main;
+    }
+
+    .wrapping > * + * {
+        margin-top: 2rem;
+    }
+}
+
+@layer typography {
+    .textflow {
+        & > * + * {
+            margin-top: 1em;
+        }
+
+        a {
+            text-decoration: underline;
+        }
+    }
+}
+
+.module + .module {
+    margin-top: 2rem;
+}
+
+.module.fancy {
+    --o-ks-scrollTrack: rgb( 255 255 255 / .2 );
+    --o-ks-scrollThumb: #eee;
+
+    color: #eee;
+    background-color: #282828;
+}
+
+.placeholder {
+    display: block;
+}
+</style>
+<link rel="stylesheet" href="kind-slider.css">
+</head>
+<body>
+    <main>
+
+        <div class="module wrapping">
+            <div class="textflow">
+                <p>The text content gets wrapped to a readable size. But our slider is going full width (in fact it needs to be full width), but aligns the edges of the slider items with the wrapping.</p>
+                <p>
+                    CSS is doing all the heavy lifting here. You can read about how this works in the <a href="https://www.smashingmagazine.com/2023/12/css-scroll-snapping-aligned-global-page-layout-case-study/">case study from Smashing Magazine</a>.
+                </p>
+                <p>
+                    The only thing we need JavaScript for are optinal buttons to scroll the slider left and right. You can provide markup by your self.
+                </p>
+            </div>
+        </div>
+
+        <kind-slider class="kind-slider module" controls>
+            <div class="ks-track" data-track>
+                <div class="ks-item">
+                    <svg class="placeholder" role="img" height="500" width="333">
+                        <use xlink:href="#img-333" href="#img-333"></use>
+                    </svg>
+                </div>
+                <div class="ks-item">
+                    <svg class="placeholder" role="img" height="500" width="640">
+                        <use xlink:href="#img-640" href="#img-640"></use>
+                    </svg>
+                </div>
+                <div class="ks-item">
+                    <svg class="placeholder" role="img" height="500" width="400">
+                        <use xlink:href="#img-400" href="#img-400"></use>
+                    </svg>
+                </div>
+                <div class="ks-item">
+                    <svg class="placeholder" role="img" height="500" width="640">
+                        <use xlink:href="#img-640" href="#img-640"></use>
+                    </svg>
+                </div>
+                <div class="ks-item">
+                    <svg class="placeholder" role="img" height="500" width="333">
+                        <use xlink:href="#img-333" href="#img-333"></use>
+                    </svg>
+                </div>
+                <div class="ks-item">
+                    <svg class="placeholder" role="img" height="500" width="500">
+                        <use xlink:href="#img-500" href="#img-500"></use>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="ks-actions" hidden="">
+                <button class="ks-action" data-direction="prev" aria-label="slide backwards">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="icon" role="img" aria-hidden="true" preserveAspectRatio="xMinYMin">
+                    <path d="M26 5L16 16l10 11-4 4L8 16 22 1l4 4z"></path>
+                    </svg>
+                </button>
+                <button class="ks-action" data-direction="next" aria-label="slide forwards">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"  fill="currentcolor" class="icon" role="img" aria-hidden="true" preserveAspectRatio="xMinYMin">
+                    <path d="M12 1l14 15-14 15-4-4 10-11L8 5z"></path>
+                    </svg>
+                </button>
+            </div>
+        </kind-slider>
+
+        <div class="module wrapping">
+            <div class="textflow">
+                <p>This is content is also wrapped to illustrate the breakout the slider performes.</p>
+                <p>
+                    On desktop systems you are likely to see the scrollbar all the time. If you feel uncomfortable with the way this looks, consider adding a background to the whole slider area to incorporate it optically.
+                </p>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum blanditiis natus reiciendis distinctio perspiciatis exercitationem? Magni saepe atque, laborum quasi ad aliquam tempore neque vel dolore veniam perspiciatis error itaque!</p>
+            </div>
+        </div>
+
+        <kind-slider class="kind-slider module fancy" controls label-next="Slide Forward" label-prev="Slide Backward">
+            <div class="ks-track" data-track>
+                <div class="ks-item">
+                    <svg class="placeholder" role="img" height="500" width="333">
+                        <use xlink:href="#img-333" href="#img-333"></use>
+                    </svg>
+                </div>
+                <div class="ks-item">
+                    <svg class="placeholder" role="img" height="500" width="640">
+                        <use xlink:href="#img-640" href="#img-640"></use>
+                    </svg>
+                </div>
+                <div class="ks-item">
+                    <svg class="placeholder" role="img" height="500" width="400">
+                        <use xlink:href="#img-400" href="#img-400"></use>
+                    </svg>
+                </div>
+                <div class="ks-item">
+                    <svg class="placeholder" role="img" height="500" width="640">
+                        <use xlink:href="#img-640" href="#img-640"></use>
+                    </svg>
+                </div>
+                <div class="ks-item">
+                    <svg class="placeholder" role="img" height="500" width="333">
+                        <use xlink:href="#img-333" href="#img-333"></use>
+                    </svg>
+                </div>
+                <div class="ks-item">
+                    <svg class="placeholder" role="img" height="500" width="500">
+                        <use xlink:href="#img-500" href="#img-500"></use>
+                    </svg>
+                </div>
+            </div>
+        </kind-slider>
+
+        <div class="module wrapping">
+            <div class="textflow">
+                <p>This one get its navigation buttons created by the component.</p>
+                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Repellat autem nobis aut adipisci! Labore, tempore iste repellat facere quis id aut natus ipsa reiciendis provident amet voluptate, voluptatibus distinctio cumque!</p>
+            </div>
+        </div>
+
+        <kind-slider class="kind-slider module">
+            <div class="ks-track">
+                <div class="ks-item">
+                    <svg class="placeholder" role="img" height="500" width="333">
+                        <use xlink:href="#img-333" href="#img-333"></use>
+                    </svg>
+                </div>
+                <div class="ks-item">
+                    <svg class="placeholder" role="img" height="500" width="640">
+                        <use xlink:href="#img-640" href="#img-640"></use>
+                    </svg>
+                </div>
+                <div class="ks-item">
+                    <svg class="placeholder" role="img" height="500" width="400">
+                        <use xlink:href="#img-400" href="#img-400"></use>
+                    </svg>
+                </div>
+                <div class="ks-item">
+                    <svg class="placeholder" role="img" height="500" width="640">
+                        <use xlink:href="#img-640" href="#img-640"></use>
+                    </svg>
+                </div>
+                <div class="ks-item">
+                    <svg class="placeholder" role="img" height="500" width="333">
+                        <use xlink:href="#img-333" href="#img-333"></use>
+                    </svg>
+                </div>
+                <div class="ks-item">
+                    <svg class="placeholder" role="img" height="500" width="500">
+                        <use xlink:href="#img-500" href="#img-500"></use>
+                    </svg>
+                </div>
+            </div>
+        </kind-slider>
+
+        <div class="module wrapping">
+            <div class="textflow">
+                <p>This one does not want a button navigation, which was the only thing the JS does 😆</p>
+                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Repellat autem nobis aut adipisci! Labore, tempore iste repellat facere quis id aut natus ipsa reiciendis provident amet voluptate, voluptatibus distinctio cumque!</p>
+            </div>
+        </div>
+    </main>
+    <script type="module" src="kind-slider.js"></script>
+
+<svg style="scale:0">
+    <defs>
+        <linearGradient id="grad1" x1=".1" x2=".7" y1="0" y2=".8">
+            <stop offset="0%" stop-color="#FBAB7E"/>
+            <stop offset="100%" stop-color="#FFCC70"/>
+        </linearGradient>
+        <linearGradient id="grad2" x1=".1" x2=".7" y1="0" y2=".8">
+            <stop offset="0%" stop-color="#DDD6F3"/>
+            <stop offset="100%" stop-color="#3EECAC"/>
+        </linearGradient>
+        <linearGradient id="grad3" x1=".1" x2=".7" y1="0" y2=".8">
+            <stop offset="0%" stop-color="#FDBB2D"/>
+            <stop offset="100%" stop-color="#8EC5FC"/>
+        </linearGradient>
+        <linearGradient id="grad4" x1=".1" x2=".7" y1="0" y2=".8">
+            <stop offset="0%" stop-color="#FDBB2D"/>
+            <stop offset="100%" stop-color="#3EECAC"/>
+        </linearGradient>
+    </defs>
+
+    <symbol id="img-333" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 333 500">
+        <rect fill="url(#grad1)" width="333" height="500"/>
+        <text fill="rgba(0,0,0,0.5)" font-family="sans-serif" font-size="30" dy="10.5" font-weight="bold" x="50%" y="50%" text-anchor="middle">333×500</text>
+    </symbol>
+    <symbol id="img-640" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 500">
+        <rect fill="url(#grad2)" width="640" height="500"/>
+        <text fill="rgba(0,0,0,0.5)" font-family="sans-serif" font-size="30" dy="10.5" font-weight="bold" x="50%" y="50%" text-anchor="middle">640×500</text>
+    </symbol>
+    <symbol id="img-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500">
+        <rect fill="url(#grad3)" width="400" height="500"/>
+        <text fill="rgba(0,0,0,0.5)" font-family="sans-serif" font-size="30" dy="10.5" font-weight="bold" x="50%" y="50%" text-anchor="middle">400×500</text>
+    </symbol>
+    <symbol id="img-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+        <rect fill="url(#grad4)" width="500" height="500"/>
+        <text fill="rgba(0,0,0,0.5)" font-family="sans-serif" font-size="30" dy="10.5" font-weight="bold" x="50%" y="50%" text-anchor="middle">500×500</text>
+    </symbol>
+</svg>
+</body>
+</html>

@@ -1,0 +1,93 @@
+.kind-slider {
+    /*
+        carousel with cool alignment to content
+        @see https://www.smashingmagazine.com/2023/12/css-scroll-snapping-aligned-global-page-layout-case-study/
+    */
+
+    --_bodyPadding: var( --o-ks-padding, 1em ); /* has to corrispond with global body padding */
+    --_contentWidth: var( --o-ks-wrapper, var( --wrapper ) );
+    --_offsetWidth: calc(
+        ((100% - (min(var(--_contentWidth), 100%) + (var(--_bodyPadding) * 2))) / 2) + (var(--_bodyPadding) * 2)
+    );
+
+    --_sb-track: var( --o-ks-scrollTrack, var( --scrollbar-track ) );
+    --_sb-thumb: var( --o-ks-scrollThumb, var( --scrollbar-thumb ) );
+    --outline-offset: calc( var( --outline-size ) * -1 );
+
+    display: block;
+
+    .ks-track {
+        display: flex;
+        gap: 1em;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scroll-padding-inline-start:  var( --_offsetWidth );
+        padding-inline: var( --_offsetWidth );
+        padding-block: 1em;
+
+        scrollbar-color: var( --_sb-thumb ) var( --_sb-track );
+        scrollbar-width: thin;
+
+        /* for those in the last row */
+        &::-webkit-scrollbar {
+            height: .5em;
+            background-color: var( --_sb-track );
+        }
+        &::-webkit-scrollbar-thumb {
+            background-color: var( --_sb-thumb )
+        }
+
+        &:focus,
+        &:focus-within {
+            outline: var( --outline-size ) var( --outline-style ) var( --outline-ink );
+            outline-offset: var( --outline-offset, var( --outline-size ) );
+        }
+
+        > * {
+            /* flex: 0 0 20em; */
+            flex: 0 0 auto;
+            scroll-snap-align: start;
+        }
+    }
+
+    & img {
+        /* aspect-ratio: 3 / 4; */
+        object-fit: cover;
+        width: 100%;
+    }
+
+    .ks-actions[hidden] {
+        display: none;
+    }
+    .ks-actions {
+        display: flex;
+        justify-content: space-between;
+        padding-inline: calc( var( --_offsetWidth ) - 1ex );
+        /* align it with the wrapped contents. substract the padding, so it's optically aligned */
+    }
+
+    .ks-action {
+        padding: 1ex;
+        border: 0;
+        border-radius: 0;
+        background: none;
+        cursor: pointer;
+
+        &[data-generated][data-direction='prev']::before {
+            content: '⏴';
+        }
+        &[data-generated][data-direction='next']::before {
+            content: '⏵';
+        }
+    }
+
+
+    .icon {
+        fill: currentcolor;
+        height: 1em;
+        width: 1em;
+        overflow: hidden;
+        vertical-align: -.125em;
+        forced-color-adjust: auto;
+    }
+}
