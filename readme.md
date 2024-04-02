@@ -25,7 +25,7 @@ This is not 100% out-of-the-box ready, since you might want to alter the CSS to 
                 alt="Random Image from Unsplash"
             >
         </div>
-                <div class="ks-item">
+        <div class="ks-item">
             <img
                 class="image"
                 src="https://picsum.photos/333/500?random=2"
